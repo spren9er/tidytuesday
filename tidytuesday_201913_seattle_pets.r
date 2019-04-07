@@ -42,16 +42,16 @@ popular_pets %>%
       fontface = 'bold', segment.size = 0.25, segment.alpha = 0.35, seed = 6,
       show.legend = FALSE
     ) +
+    geom_text(
+      data = filter(popular_pets, most_popular),
+      aes(label = animal_name, size = total, color = sign),
+      fontface = 'bold', show.legend = FALSE
+    ) +
     geom_label_repel(
       data = filter(popular_pets, most_popular),
       aes(label = paste0(total, ' (', dog, '/', cat, ')')),
       fontface = 'bold', label.padding = 0.2, color = '#cccccc', size = 2,
       nudge_y = -3.5, show.legend = FALSE
-    ) +
-    geom_text(
-      data = filter(popular_pets, most_popular),
-      aes(label = animal_name, size = total, color = sign),
-      fontface = 'bold', show.legend = FALSE
     ) +
     expand_limits(x = 0, y = 0) +
     scale_y_continuous(breaks = c(0, 25, 50, 75, 100)) +
