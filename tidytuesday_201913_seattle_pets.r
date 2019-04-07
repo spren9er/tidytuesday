@@ -23,7 +23,7 @@ model <- lm(cat ~ dog, pets_totals)
 intercept <- model$coefficients[1]
 slope <- model$coefficients[2]
 
-popular_pets <- augment(model, pets_totals) %>%
+pets_popular <- augment(model, pets_totals) %>%
   mutate(
     total = dog + cat,
     most_popular = total >= 230,
@@ -31,27 +31,26 @@ popular_pets <- augment(model, pets_totals) %>%
     sign = factor(-sign(.resid))
   )
 
-popular_pets %>%
+pets_popular %>%
   ggplot(aes(x = dog, y = cat)) +
     geom_abline(
       intercept = intercept, slope = slope, size = 0.25, linetype = 2
     ) +
     geom_text_repel(
-      data = filter(popular_pets, popular & !most_popular),
+      data = filter(pets_popular, popular & !most_popular),
       aes(label = animal_name, size = total, color = sign),
       fontface = 'bold', segment.size = 0.25, segment.alpha = 0.35, seed = 6,
       show.legend = FALSE
     ) +
     geom_text(
-      data = filter(popular_pets, most_popular),
+      data = filter(pets_popular, most_popular),
       aes(label = animal_name, size = total, color = sign),
       fontface = 'bold', show.legend = FALSE
     ) +
     geom_label_repel(
-      data = filter(popular_pets, most_popular),
+      data = filter(pets_popular, most_popular),
       aes(label = paste0(total, ' (', dog, '/', cat, ')')),
-      fontface = 'bold', label.padding = 0.2, color = '#cccccc', size = 2,
-      nudge_y = -3.5, show.legend = FALSE
+      fontface = 'bold', label.padding = 0.2, size = 2, nudge_y = -3.5, show.legend = FALSE
     ) +
     expand_limits(x = 0, y = 0) +
     scale_y_continuous(breaks = c(0, 25, 50, 75, 100)) +
