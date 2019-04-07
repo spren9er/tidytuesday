@@ -44,7 +44,7 @@ levels <- c(
 bike_traffic_totals %>%
   mutate(name = factor(name, levels = levels)) %>%
   ggplot() +
-    geom_tile(aes(x = hour, y = wday, fill = percentage), show.legend = TRUE) +
+    geom_tile(aes(x = hour, y = wday, fill = percentage)) +
     scale_x_continuous(breaks = 0:23) +
     scale_fill_viridis(breaks = c(0, 100), labels = c('low', 'high')) +
     facet_wrap(~ name, ncol = 2, scales = 'free') +
