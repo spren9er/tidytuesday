@@ -13,7 +13,8 @@ raw_data <- readr::read_csv(
   )
 )
 
-bike_traffic <- filter(raw_data, !is.na(bike_count), bike_count < 2000)
+bike_traffic <- raw_data %>%
+  filter( !is.na(bike_count), bike_count < 2000, date >= ymd(20140101))
 
 bike_traffic_totals <- bike_traffic %>%
   mutate(wday = wday(date, label = TRUE), hour = hour(date)) %>%
