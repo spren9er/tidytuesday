@@ -59,6 +59,6 @@ bike_traffic_totals %>%
     )
 
 ggsave(
-  'tidytuesday_201914_seattle_bike_counters.png',
+  'images/tidytuesday_201914_seattle_bike_counters.png',
   width = 10, height = 13, bg = 'transparent'
 )

@@ -64,4 +64,7 @@ pets_popular %>%
       caption = '© 2019 spren9er'
     )
 
-ggsave('tidytuesday_201913_seattle_pets.png', dpi = 600, bg = 'transparent')
+ggsave(
+  'images/tidytuesday_201913_seattle_pets.png', 
+  dpi = 600, bg = 'transparent'
+)

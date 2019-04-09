@@ -107,7 +107,7 @@ imap(best_players$player, function(player, idx) {
   colors[player] <- '#333333'
 
   png(
-    file = paste0('chord_diagram_', idx, '.png'),
+    file = paste0('images/chord_diagram_', idx, '.png'),
     height = 7, width = 7,  units = 'in', res = 300
   )
 
@@ -154,7 +154,7 @@ imap(best_players$player, function(player, idx) {
 })
 
 frames <- map(1:8, function(idx) {
-  file = paste0('chord_diagram_', idx, '.png')
+  file = paste0('images/chord_diagram_', idx, '.png')
   img <- image_read(file)
   image_scale(img, '1024x1024')
 })
@@ -163,6 +163,6 @@ animation <- image_animate(image_join(frames), fps = 0.5)
 
 image_write(
   image = animation,
-  path = 'tidytuesday_201915_tennis_grand_slams.gif',
+  path = 'images/tidytuesday_201915_tennis_grand_slams.gif',
   quality = 100
 )
