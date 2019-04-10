@@ -119,7 +119,6 @@ imap(best_players$player, function(player, idx) {
     height = 7, width = 7,  units = 'in', res = 300
   )
 
-  circos.clear()
   circos.par(
     gap.after = c(
       rep(2, 3), 9, rep(2, length(years) - 1), 9, rep(2, 2), 15,
