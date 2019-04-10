@@ -2,6 +2,7 @@ library(tidyverse)
 library(circlize)
 library(magick)
 
+# data preparation
 path <- 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-09/'
 
 players <- read_csv(paste0(path, 'player_dob.csv'))
@@ -27,6 +28,8 @@ grand_slams <- grand_slams %>%
   ) %>%
   filter(!is.na(last_round))
 
+# select four female and male tennis players (aged < 39) with most won
+# grand slam tournaments
 best_players <- grand_slams %>%
   left_join(players, by = c('player' = 'name')) %>%
   filter(date_of_birth > '1981-01-01') %>%
@@ -36,43 +39,45 @@ best_players <- grand_slams %>%
   top_n(4, total) %>%
   arrange(gender, total)
 
-best_players_grand_slams <- grand_slams %>%
+grand_slams_best_players <- grand_slams %>%
   filter(player %in% pull(best_players, player), last_round <= 4) %>%
   select(player, gender, year, tournament, last_round)
 
-player_tournament <- best_players_grand_slams %>%
+# prepare adjacency list for chord diagram
+player_tournament <- grand_slams_best_players %>%
   filter(last_round == 1) %>%
   group_by(player, tournament) %>%
   summarize(total = n()) %>%
   ungroup() %>%
   transmute(player, to = tournament, total)
 
-player_year <- best_players_grand_slams %>%
+player_year <- grand_slams_best_players %>%
   filter(last_round == 1) %>%
   group_by(player, year) %>%
   summarize(total = n()) %>%
   ungroup() %>%
   transmute(player, to = as.character(year), total)
 
-player_last_round <- best_players_grand_slams %>%
+player_last_round <- grand_slams_best_players %>%
   group_by(player, last_round) %>%
   summarize(total = n()) %>%
   ungroup() %>%
   transmute(player, to = as.character(last_round), total)
 
+# build and save chord diagrams for 8 selected tennis players
 imap(best_players$player, function(player, idx) {
   adjacency_list <-
     bind_rows(player_tournament, player_year, player_last_round) %>%
     mutate(
       color = case_when(
-        player == !!player & str_starts(to, 'A') ~ '#c54950',
-        player == !!player & str_starts(to, 'F') ~ '#2a9e46',
-        player == !!player & str_starts(to, 'W') ~ '#3766aa',
-        player == !!player & str_starts(to, 'U') ~ '#6b42b8',
+        player == !!player & str_starts(to, 'A')      ~ '#c54950',
+        player == !!player & str_starts(to, 'F')      ~ '#2a9e46',
+        player == !!player & str_starts(to, 'W')      ~ '#3766aa',
+        player == !!player & str_starts(to, 'U')      ~ '#6b42b8',
+        player == !!player & str_starts(to, '1')      ~ '#c54950',
+        player == !!player & str_starts(to, '2')      ~ '#2a9e46',
+        player == !!player & str_starts(to, '4')      ~ '#3766aa',
         player == !!player & str_detect(to, '\\d{4}') ~ '#777777',
-        player == !!player & str_starts(to, '1') ~ '#c54950',
-        player == !!player & str_starts(to, '2') ~ '#2a9e46',
-        player == !!player & str_starts(to, '4') ~ '#3766aa',
         TRUE ~ '#efefef80'
       ),
       to = case_when(
@@ -84,6 +89,7 @@ imap(best_players$player, function(player, idx) {
       rank = if_else(color == '#efefef80', 1, 2)
     )
 
+  # prepare colors
   years <- sort(unique(player_year$to))
   year_colors <-  rep('#dedede', length(years))
   names(year_colors) <- years
@@ -107,6 +113,7 @@ imap(best_players$player, function(player, idx) {
   colors[player_years] <- '#777777'
   colors[player] <- '#333333'
 
+  # create image
   png(
     file = paste0('images/chord_diagram_', idx, '.png'),
     height = 7, width = 7,  units = 'in', res = 300
@@ -125,19 +132,8 @@ imap(best_players$player, function(player, idx) {
     col = '#333333', col.main = '#333333', mar = c(0, 0, 3.1, 0), bg = '#fef9f4'
   )
 
-  styles <- list(
-    track.index = 1, panel.fun = function(x, y) {
-      circos.text(
-        CELL_META$xcenter, CELL_META$ylim[1], CELL_META$sector.index,
-        facing = 'clockwise', niceFacing = TRUE, adj = c(-0.025, 0.5),
-        cex = 0.6)
-    },
-      bg.border = NA
-    )
-
   chordDiagram(
-    adjacency_list %>%
-      select(player, to, total),
+    select(adjacency_list, player, to, total),
     order = names(colors),
     grid.col = colors,
     col = pull(adjacency_list, color),
@@ -145,7 +141,19 @@ imap(best_players$player, function(player, idx) {
     annotationTrack = 'grid',
     preAllocateTracks = list(list(track.height = 0.2)),
     link.rank = pull(adjacency_list, rank),
-  );do.call(circos.track, styles)
+  )
+
+  circos.track(
+    track.index = 1,
+    panel.fun = function(x, y) {
+      circos.text(
+        CELL_META$xcenter, CELL_META$ylim[1], CELL_META$sector.index,
+        facing = 'clockwise', niceFacing = TRUE, adj = c(-0.025, 0.5),
+        cex = 0.6
+      )
+    },
+    bg.border = NA
+  )
 
   text(-1, -1, '#tidytuesday 15|2019', cex = 0.5)
   text(1, -1, '© 2019 spren9er', cex = 0.5)
@@ -154,8 +162,9 @@ imap(best_players$player, function(player, idx) {
   dev.off()
 })
 
+# build and save animation
 frames <- map(1:8, function(idx) {
-  file = paste0('images/chord_diagram_', idx, '.png')
+  file <- paste0('images/chord_diagram_', idx, '.png')
   img <- image_read(file)
   image_scale(img, '1024x1024')
 })
