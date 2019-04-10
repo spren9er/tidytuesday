@@ -30,14 +30,14 @@ grand_slams <- grand_slams %>%
 
 # select four female and male tennis players (aged < 39) with most won
 # grand slam tournaments
-best_players <- grand_slams %>%
+(best_players <- grand_slams %>%
   left_join(players, by = c('player' = 'name')) %>%
-  filter(date_of_birth > '1981-01-01') %>%
+  filter(date_of_birth > '1981-01-01', last_round == 1) %>%
   group_by(gender, player) %>%
-  summarize(matches = n(), total = sum(last_round[last_round == 1])) %>%
+  summarize(total = n()) %>%
   group_by(gender) %>%
   top_n(4, total) %>%
-  arrange(gender, total)
+  arrange(gender, total))
 
 grand_slams_best_players <- grand_slams %>%
   filter(player %in% pull(best_players, player), last_round <= 4) %>%
