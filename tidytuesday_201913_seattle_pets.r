@@ -3,7 +3,7 @@ library(lubridate)
 library(broom)
 library(ggrepel)
 
-raw_data <- readr::read_csv(
+raw_data <- read_csv(
   'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-03-26/seattle_pets.csv'
 )
 
@@ -65,6 +65,6 @@ pets_popular %>%
     )
 
 ggsave(
-  'images/tidytuesday_201913_seattle_pets.png', 
+  'images/tidytuesday_201913_seattle_pets.png',
   dpi = 600, bg = 'transparent'
 )

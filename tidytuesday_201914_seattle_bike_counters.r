@@ -4,7 +4,7 @@ library(viridis)
 
 options(lubridate.week.start = 1)
 
-raw_data <- readr::read_csv(
+raw_data <- read_csv(
   "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-02/bike_traffic.csv",
   col_types = list(
     date = col_datetime('%m/%d/%Y %H:%M:%S %p'),
