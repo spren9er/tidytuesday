@@ -1,6 +1,11 @@
 library(tidyverse)
 
-raw_data <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-16/women_research.csv")
+raw_data <- read_csv(
+  paste0(
+    'https://raw.githubusercontent.com/rfordatascience/tidytuesday/',
+    'master/data/2019/2019-04-16/women_research.csv'
+  )
+)
 
 women_research <- raw_data %>%
   mutate(
@@ -44,7 +49,11 @@ plot <- women_research %>%
       x = '',
       y = '',
       title = "Still a man's world",
-      subtitle = '#tidytuesday 16|2019 • women among researchers with papers published 2011-2015',
+      subtitle = paste(
+        '#tidytuesday 16|2019',
+        'women among researchers with papers published 2011-2015',
+        sep = ' • '
+      ),
       caption = '© 2019 spren9er'
     )
 

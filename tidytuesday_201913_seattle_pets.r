@@ -4,7 +4,10 @@ library(broom)
 library(ggrepel)
 
 raw_data <- read_csv(
-  'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-03-26/seattle_pets.csv'
+  paste0(
+    'https://raw.githubusercontent.com/rfordatascience/tidytuesday/',
+    'master/data/2019/2019-03-26/seattle_pets.csv'
+  )
 )
 
 pets_totals <- raw_data %>%

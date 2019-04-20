@@ -3,8 +3,10 @@ library(circlize)
 library(magick)
 
 # data preparation
-path <- 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-09/'
-
+path <- paste0(
+  'https://raw.githubusercontent.com/rfordatascience/tidytuesday/',
+  'master/data/2019/2019-04-09/'
+)
 players <- read_csv(paste0(path, 'player_dob.csv'))
 grand_slams <- read_csv(paste0(path, 'grand_slam_timeline.csv'))
 
