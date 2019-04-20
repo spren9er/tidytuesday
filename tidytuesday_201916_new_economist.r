@@ -6,21 +6,21 @@ women_research <- raw_data %>%
   mutate(
     field = gsub('Women Inventores', 'Inventors', str_to_title(field)),
     percent_men = 1 - percent_women,
-    not_less_women = percent_women >= percent_men
+    women_ratio = ifelse(percent_women < percent_men, 'less', 'not_less')
   ) %>%
   pivot_longer(
-    starts_with('percent'), names_to = 'gender', values_to = 'percent',
+    starts_with('percent'), names_to = 'sex', values_to = 'percent',
     names_prefix = 'percent_'
   )
 
 women_field_averages <- women_research %>%
-  filter(gender == 'women') %>%
+  filter(sex == 'women') %>%
   group_by(field) %>%
   summarize(avg_field_percent = mean(percent)) %>%
   arrange(avg_field_percent)
 
 women_country_averages <- women_research %>%
-  filter(gender == 'women') %>%
+  filter(sex == 'women') %>%
   group_by(country) %>%
   summarize(avg_country_percent = mean(percent)) %>%
   arrange(avg_country_percent)
@@ -29,14 +29,14 @@ plot <- women_research %>%
   mutate(
     field = factor(field, levels = women_field_averages$field),
     country = factor(country, levels = women_country_averages$country),
-    gender_not_less_women = paste(gender, not_less_women)
+    sex_women_ratio = interaction(sex, women_ratio)
   ) %>%
-  ggplot(aes(
-      x = '', y = percent, fill = gender_not_less_women,
-      color = not_less_women
-    )) +
-    geom_bar(stat = 'identity', show.legend = FALSE) +
-    scale_fill_manual(values = c('#efefef', '#efefef', '#333333', '#c54950')) +
+  ggplot() +
+    geom_bar(
+      aes(x = '', y = percent, fill = sex_women_ratio, color = women_ratio),
+      stat = 'identity', show.legend = FALSE
+    ) +
+    scale_fill_manual(values = c('#efefef', '#333333', '#efefef', '#c54950')) +
     scale_color_manual(values = c('#333333', '#c54950')) +
     coord_polar('y', start = 0) +
     facet_grid(field ~ country, switch = 'y') +
