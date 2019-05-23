@@ -31,15 +31,15 @@ data <- mismanaged_vs_gdp %>%
   ) %>%
   filter(!is.na(coalesce(mismanaged_waste_per_day_pc, waste_per_day_pc)))
 
-# http://www.naturalearthdata.com/downloads/110m-physical-vectors/110m-land/
-world <- readOGR(dsn = 'ne_110m_land', layer = 'ne_110m_land')
+# naturalearthdata.com/downloads/110m-physical-vectors/110m-land
+world <- readOGR(dsn = 'data/ne_110m_land', layer = 'ne_110m_land')
 
 world_df <- fortify(world) %>%
   filter(!id %in% as.character(0:7)) # remove antarctica
 
-# http://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-admin-0-countries/
+# naturalearthdata.com/downloads/110m-cultural-vectors/110m-admin-0-countries
 countries <- readOGR(
-  dsn = 'ne_110m_admin_0_countries', layer = 'ne_110m_admin_0_countries'
+  dsn = 'data/ne_110m_admin_0_countries', layer = 'ne_110m_admin_0_countries'
 )
 
 countries_df <- fortify(countries) %>%
@@ -72,8 +72,9 @@ kpis_per_country_gathered <- kpis_per_country %>%
   )
 
 selected_countries <- c(
-  'KOR', 'JPN', 'AUS', 'GBR', 'QAT', 'NLD', 'PRT', 'FLK', 'GRL', 'NCL',
-  'GRC', 'DEU', 'FRA', 'USA', 'CAN', 'MEX', 'BRA', 'SOM', 'PAK', 'PNG', 'SLB', 'VNM', 'KHM', 'MMR', 'BGD', 'PRK', 'IND', 'ZAF'
+  'KOR', 'JPN', 'AUS', 'GBR', 'QAT', 'NLD', 'PRT', 'FLK', 'GRL', 'NCL', 'GRC',
+  'DEU', 'FRA', 'USA', 'CAN', 'MEX', 'BRA', 'SOM', 'PAK', 'PNG', 'SLB', 'VNM',
+  'KHM', 'MMR', 'BGD', 'PRK', 'IND', 'ZAF'
 )
 
 country_labels <- kpis_per_country %>%
