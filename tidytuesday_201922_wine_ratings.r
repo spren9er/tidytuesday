@@ -76,10 +76,7 @@ ggraph(graph, layout = 'fr', niter = 15000) +
   geom_node_text(
     aes(label = name), size = 3, repel = TRUE
   ) +
-  scale_color_viridis(
-    limits = c(84, 91.5),
-    breaks = c(85.0, 87.5, 90.0, 92.5)
-  ) +
+  scale_color_viridis(breaks = c(85.0, 87.5, 90.0, 92.5)) +
   scale_size_area(
     breaks = c(250, 1000, 2500, 5000, 10000, 25000),
     labels = function(n) { format(n, big.mark = ',') }
@@ -161,9 +158,7 @@ ggraph(graph, layout = 'fr', niter = 15000) +
   geom_node_text(
     aes(label = name), size = 3, repel = TRUE
   ) +
-  scale_color_viridis(
-    limits = c(86, 90), breaks = c(86.0, 87.0, 88.0, 89.0, 90.0)
-  ) +
+  scale_color_viridis(breaks = c(86.0, 87.0, 88.0, 89.0, 90.0)) +
   scale_size_area(
     breaks = c(5000, 10000, 25000, 50000),
     labels = function(n) { format(n, big.mark = ',') }
