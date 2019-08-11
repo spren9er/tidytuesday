@@ -82,7 +82,7 @@ cut_residuals %>%
     object = fct_relevel(object, reordered_objects)
   ) %>%
   filter(cut_residual > 0) %>%
-  ggplot(aes(x = color, y = object, fill = color, alpha = exp(cut_residual))) +
+  ggplot(aes(x = color, y = object, fill = color, alpha = cut_residual)) +
     geom_tile(width = 0.9, height = 0.9, show.legend = FALSE) +
     scale_fill_manual(values = palette$color) +
     scale_x_discrete(position = 'top') +
