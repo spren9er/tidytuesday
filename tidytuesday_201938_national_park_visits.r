@@ -32,7 +32,7 @@ highlight_parks <- c(
   'GREAT BASIN'
 )
 
-highlight_colors = c(
+highlight_colors <- c(
   '#223e15',
   '#176785',
   '#499989',
@@ -124,6 +124,6 @@ animation <- top_parks %>%
     axis.title.y = element_text(color = '#333333', face = 'bold', size = 16)
   )
 
-animate(animation,width = 1000, height = 1000, end_pause = 30)
+animate(animation, width = 1000, height = 1000, end_pause = 30)
 
 anim_save('images/tidytuesday_201938_national_park_visits.gif')
