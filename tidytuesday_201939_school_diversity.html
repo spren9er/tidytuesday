@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3-force.v2.min.js"></script>
+    <script src="https://d3js.org/d3-dsv.v1.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&display=swap" rel="stylesheet">
+
+    <style media="screen">
+      body {
+        font-family: 'Inconsolata', monospace;
+        width: 1200px;
+        color: #333333;
+      }
+      h1, h3, h4 {
+        text-align: center;
+      }
+
+      h1 {
+        font-weight: bold;
+        margin-top: 150px;
+        font-size: 44px;
+      }
+
+      h3 {
+        font-weight: normal;
+        font-size: 30px;
+      }
+
+      h4 {
+        font-weight: normal;
+        font-size: 21px;
+        color: #cccccc;
+        margin-top: -100px;
+      }
+
+    </style>
+
+    <title>TidyTuesday 39|2019 • School Diversity</title>
+  </head>
+  <body>
+    <h1>School Diversity</h1>
+
+    <h3>Diversity Changes of 12,717 U.S. School Districts</h3>
+
+    <svg></svg>
+
+    <h4>tidytuesday 39|2019  •  © 2019 spren9er</h4>
+
+    <script type="text/javascript">
+      d3.csv(
+        'data/tidytuesday_201939_school_diversity_preprocessed.csv',
+        d => ({
+          id: d.id,
+          x: +d.x,
+          y: +d.y,
+          sourceRadius: +d.sourceRadius,
+          targetRadius: +d.targetRadius,
+          color: d.color,
+          sourceX: +d.sourceX,
+          targetX: +d.targetX,
+          sourceY: +d.sourceY,
+          targetY: +d.targetY,
+          random: Math.random()
+        })
+      ).then(data => {
+        const width = 1200
+        const height = 1200
+
+        const svg =
+          d3.select('svg')
+            .attr('width', width)
+            .attr('height', height)
+
+        const xCenter = [width / 4, 3 * width / 4]
+        const yCenter = [height / 4, height / 2, 3 * height / 4]
+        const colors = ['#d5ece6', '#9ccadd', '#b394c9']
+        const strength = 0.01
+
+        let nodes = data
+
+        // commented code is used for data preprocessing
+        // here: import raw data
+
+        // const maxTotal = d3.max(
+        //   nodes.map(d => +d.total_1994).concat(nodes.map(d => +d.total_2016))
+        // )
+        // const totalScale =
+        //   d3.scaleSqrt()
+        //     .domain([0, maxTotal])
+        //     .range([1, 20])
+        //
+        // nodes = nodes.map(function(d){
+        //   const sourceIndex = +d.diverse_1994 + 1
+        //   const targetIndex = +d.diverse_2016 + 1
+        //
+        //   return {
+        //     id: d.id,
+        //     x: xCenter[0],
+        //     y: yCenter[sourceIndex],
+        //     sourceRadius: Math.floor(totalScale(+d.total_1994)),
+        //     targetRadius: Math.floor(totalScale(+d.total_2016)),
+        //     color: colors[sourceIndex],
+        //     sourceX: xCenter[0],
+        //     targetX: xCenter[1],
+        //     sourceY: yCenter[sourceIndex],
+        //     targetY: yCenter[targetIndex]
+        //   }
+        // })
+
+        let grayCircles =
+          d3.select('svg')
+            .selectAll('.gray_circle')
+
+        let circles =
+          d3.select('svg')
+            .selectAll('.circle')
+
+        grayCircles
+          .data(nodes)
+          .enter()
+          .append('circle')
+          .attr('class', 'gray_circle')
+          .attr('r', d => d.sourceRadius)
+          .attr('fill', '#efefef')
+          .attr('cx', d => d.x)
+          .attr('cy', d => d.y)
+
+        function ticked() {
+          circles
+            .attr('class', 'circle')
+            .attr('r', d => d.sourceRadius)
+            .attr('fill', d => d.color)
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+        }
+
+
+        // calculate source and target coords with d3.force layout
+
+        // const simulation =
+        //   d3.forceSimulation(nodes)
+        //     // .force('collision',
+        //     //   d3.forceCollide()
+        //     //     .radius(d => d.sourceRadius + 0.5)
+        //     //     .strength(1)
+        //     // )
+        //     .force('x',
+        //       d3.forceX()
+        //         .x(d => d.sourceX)
+        //         .strength(strength)
+        //     )
+        //     .force('y',
+        //       d3.forceY()
+        //         .y(d => d.sourceY)
+        //         .strength(strength)
+        //     )
+        //     .alpha(1)
+        //     .on('tick', ticked)
+
+        function update() {
+          circles = circles.data(nodes)
+
+          circles.exit()
+            .remove()
+
+          circles.transition()
+
+          circles = circles.enter()
+            .append('circle')
+            .attr('class', 'circle')
+            .attr('r', d => d.sourceRadius)
+            .attr('fill', d => d.color)
+            .merge(circles)
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+        }
+
+        // write intermediate results to csv and reuse it in d3.force to
+        // improve source and target coords
+
+        // function updateNodes() {
+        //   setTimeout(d => console.log(d3.csvFormat(nodes)), 60000)
+        //
+        //   simulation.alphaDecay(0.01)
+        //             .force('x',
+        //               d3.forceX()
+        //                 .x(d => d.targetX)
+        //                 .strength(strength)
+        //             )
+        //             .force('y',
+        //               d3.forceY()
+        //                 .y(d => d.targetY)
+        //                 .strength(strength)
+        //             )
+        //             .restart()
+        // }
+        //
+        // setTimeout(updateNodes, 1000)
+
+        update()
+
+        const factor = 1
+        const delay = factor * 2000
+        const animDuration = factor * 10000
+
+        svg.selectAll('.years_lavel')
+          .data([
+            {label: '1995', x: xCenter[0], y: 100},
+            {label: '2017', x: xCenter[1], y: 100}
+          ])
+          .enter()
+          .append('text')
+          .attr('class', 'years_lavel')
+          .style('font-size', '35px')
+          .style('font-weight', 'normal')
+          .attr('text-anchor', 'middle')
+          .attr('x', d => d.x)
+          .attr('y', d => d.y)
+          .attr('fill', '#333333')
+          .text(d => d.label)
+
+        svg.selectAll('.diversity_label')
+          .data([
+            {label: 'Extremely Undiverse', x: xCenter[0], y: yCenter[0]},
+            {label: 'Undiverse',           x: xCenter[0], y: yCenter[1]},
+            {label: 'Diverse',             x: xCenter[0], y: yCenter[2]}
+          ])
+          .enter()
+          .append('text')
+          .attr('class', 'diversity_label')
+          .style('font-size', '28px')
+          .style('font-weight', 'bold')
+          .attr('text-anchor', 'middle')
+          .attr('alignment-baseline', 'middle')
+          .attr('x', d => d.x)
+          .attr('y', d => d.y)
+          .attr('fill', '#333333')
+          .text(d => d.label)
+
+        svg.selectAll('.description_label')
+          .data([
+            {label: 'More than 90%', x: xCenter[0], y: yCenter[0] + 30},
+            {label: '75% to 90%',    x: xCenter[0], y: yCenter[1] + 30},
+            {label: 'Less than 75%', x: xCenter[0], y: yCenter[2] + 30}
+          ])
+          .enter()
+          .append('text')
+          .attr('class', 'description_label')
+          .style('font-size', '20px')
+          .style('font-weight', 'normal')
+          .attr('text-anchor', 'middle')
+          .attr('alignment-baseline', 'middle')
+          .attr('x', d => d.x)
+          .attr('y', d => d.y)
+          .attr('fill', '#333333')
+          .text(d => d.label)
+
+        svg.selectAll('.diversity_label')
+          .transition()
+          .ease(d3.easeLinear)
+          .duration((delay + animDuration) / 8.0)
+          .delay(7 * (delay + animDuration) / 8.0)
+          .attr('x', d => d3.mean(xCenter))
+          .attr('fill', '#333333')
+
+        svg.selectAll('.description_label')
+          .transition()
+          .ease(d3.easeLinear)
+          .duration((delay + animDuration) / 8.0)
+          .delay(7 * (delay + animDuration) / 8.0)
+          .attr('x', d => d3.mean(xCenter))
+          .attr('fill', '#333333')
+
+        const tolerance = 0.75
+
+        svg.selectAll('.circle')
+          .transition()
+          .ease(d3.easeLinear)
+          .duration(d =>
+            Math.floor((tolerance * (d.random - 1) + 1) * animDuration)
+          )
+          .delay(d =>
+            Math.floor(delay + ((1 - d.random) * tolerance) * animDuration)
+          )
+          .attr('r', d => d.targetRadius)
+          .attr('cx', d => d.targetX)
+          .attr('cy', d => d.targetY)
+
+        svg.selectAll('.gray_circle')
+          .transition()
+          .ease(d3.easeLinear)
+          .duration(Math.floor((1 - tolerance) * animDuration))
+          .delay(Math.floor(delay + tolerance * animDuration))
+          .attr('fill', d => d.color)
+      })
+    </script>
+  </body>
+</html>
