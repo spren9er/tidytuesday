@@ -1,0 +1,51 @@
+body {
+  font-family: 'Inconsolata', monospace;
+  width: 1200px;
+  color: #333333;
+  fill: #333333;
+}
+h1, h3, h4 {
+  text-align: center;
+}
+
+h1 {
+  font-weight: bold;
+  margin-top: 150px;
+  font-size: 44px;
+}
+
+h3 {
+  font-weight: normal;
+  font-size: 30px;
+}
+
+h4 {
+  font-weight: normal;
+  font-size: 21px;
+  color: #cccccc;
+  margin-top: -100px;
+}
+
+.gray_circle {
+  fill: #efefef;
+}
+
+.years_label {
+  font-size: 35px;
+  font-weight: normal;
+  text-anchor: middle;
+}
+
+.description_label {
+  font-size: 20px;
+  font-weight: normal;
+  text-anchor: middle;
+  alignment-baseline: middle;
+}
+
+.diversity_label {
+  font-size: 28px;
+  font-weight: bold;
+  text-anchor: middle;
+  alignment-baseline: middle;
+}

@@ -8,36 +8,7 @@
     <script src="https://d3js.org/d3-dsv.v1.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&display=swap" rel="stylesheet">
-
-    <style media="screen">
-      body {
-        font-family: 'Inconsolata', monospace;
-        width: 1200px;
-        color: #333333;
-      }
-      h1, h3, h4 {
-        text-align: center;
-      }
-
-      h1 {
-        font-weight: bold;
-        margin-top: 150px;
-        font-size: 44px;
-      }
-
-      h3 {
-        font-weight: normal;
-        font-size: 30px;
-      }
-
-      h4 {
-        font-weight: normal;
-        font-size: 21px;
-        color: #cccccc;
-        margin-top: -100px;
-      }
-
-    </style>
+    <link href="tidytuesday_201939_school_diversity.css" rel="stylesheet">
 
     <title>TidyTuesday 39|2019 • School Diversity</title>
   </head>
@@ -125,22 +96,20 @@
           .append('circle')
           .attr('class', 'gray_circle')
           .attr('r', d => d.sourceRadius)
-          .attr('fill', '#efefef')
           .attr('cx', d => d.x)
           .attr('cy', d => d.y)
 
-        function ticked() {
-          circles
-            .attr('class', 'circle')
-            .attr('r', d => d.sourceRadius)
-            .attr('fill', d => d.color)
-            .attr('cx', d => d.x)
-            .attr('cy', d => d.y)
-        }
-
-
         // calculate source and target coords with d3.force layout
 
+        // function ticked() {
+        //   circles
+        //     .attr('class', 'circle')
+        //     .attr('r', d => d.sourceRadius)
+        //     .attr('fill', d => d.color)
+        //     .attr('cx', d => d.x)
+        //     .attr('cy', d => d.y)
+        // }
+        //
         // const simulation =
         //   d3.forceSimulation(nodes)
         //     // .force('collision',
@@ -160,24 +129,6 @@
         //     )
         //     .alpha(1)
         //     .on('tick', ticked)
-
-        function update() {
-          circles = circles.data(nodes)
-
-          circles.exit()
-            .remove()
-
-          circles.transition()
-
-          circles = circles.enter()
-            .append('circle')
-            .attr('class', 'circle')
-            .attr('r', d => d.sourceRadius)
-            .attr('fill', d => d.color)
-            .merge(circles)
-            .attr('cx', d => d.x)
-            .attr('cy', d => d.y)
-        }
 
         // write intermediate results to csv and reuse it in d3.force to
         // improve source and target coords
@@ -201,26 +152,37 @@
         //
         // setTimeout(updateNodes, 1000)
 
-        update()
-
         const factor = 1
         const delay = factor * 2000
         const animDuration = factor * 10000
+        const tolerance = 0.75
 
-        svg.selectAll('.years_lavel')
+        circles = circles.data(nodes)
+
+        circles.exit()
+          .remove()
+
+        circles.transition()
+
+        circles = circles.enter()
+          .append('circle')
+          .attr('class', 'circle')
+          .attr('r', d => d.sourceRadius)
+          .attr('fill', d => d.color)
+          .merge(circles)
+          .attr('cx', d => d.x)
+          .attr('cy', d => d.y)
+
+        svg.selectAll('.years_label')
           .data([
             {label: '1995', x: xCenter[0], y: 100},
             {label: '2017', x: xCenter[1], y: 100}
           ])
           .enter()
           .append('text')
-          .attr('class', 'years_lavel')
-          .style('font-size', '35px')
-          .style('font-weight', 'normal')
-          .attr('text-anchor', 'middle')
+          .attr('class', 'years_label')
           .attr('x', d => d.x)
           .attr('y', d => d.y)
-          .attr('fill', '#333333')
           .text(d => d.label)
 
         svg.selectAll('.diversity_label')
@@ -232,13 +194,8 @@
           .enter()
           .append('text')
           .attr('class', 'diversity_label')
-          .style('font-size', '28px')
-          .style('font-weight', 'bold')
-          .attr('text-anchor', 'middle')
-          .attr('alignment-baseline', 'middle')
           .attr('x', d => d.x)
           .attr('y', d => d.y)
-          .attr('fill', '#333333')
           .text(d => d.label)
 
         svg.selectAll('.description_label')
@@ -250,13 +207,8 @@
           .enter()
           .append('text')
           .attr('class', 'description_label')
-          .style('font-size', '20px')
-          .style('font-weight', 'normal')
-          .attr('text-anchor', 'middle')
-          .attr('alignment-baseline', 'middle')
           .attr('x', d => d.x)
           .attr('y', d => d.y)
-          .attr('fill', '#333333')
           .text(d => d.label)
 
         svg.selectAll('.diversity_label')
@@ -265,7 +217,6 @@
           .duration((delay + animDuration) / 8.0)
           .delay(7 * (delay + animDuration) / 8.0)
           .attr('x', d => d3.mean(xCenter))
-          .attr('fill', '#333333')
 
         svg.selectAll('.description_label')
           .transition()
@@ -273,9 +224,6 @@
           .duration((delay + animDuration) / 8.0)
           .delay(7 * (delay + animDuration) / 8.0)
           .attr('x', d => d3.mean(xCenter))
-          .attr('fill', '#333333')
-
-        const tolerance = 0.75
 
         svg.selectAll('.circle')
           .transition()
