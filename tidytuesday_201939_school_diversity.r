@@ -54,7 +54,7 @@ data_source %>%
 ################################################################################
 
 # export d3 animation to video (.mov) using quick time player screen recording
-# and ffmpeg to change frame rate
+# and ffmpeg to downsample and change frame rate
 # ffmpeg -y -i input.mov
 #   -vf "setpts=0.1*PTS,scale=1200:-1" -r 40000/1001 output.mp4
 #   -vf "setpts=0.1*PTS,scale=1200:-1" -r 40000/1001 output.gif

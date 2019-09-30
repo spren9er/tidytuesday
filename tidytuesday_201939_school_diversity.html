@@ -49,22 +49,116 @@
         const xCenter = [width / 4, 3 * width / 4]
         const yCenter = [height / 4, height / 2, 3 * height / 4]
         const colors = ['#d5ece6', '#9ccadd', '#b394c9']
-        const strength = 0.01
+        const factor = 10
+        const delay = factor * 2000
+        const animDuration = factor * 10000
+        const tolerance = 0.6
 
-        let nodes = data
+        svg.selectAll('.gray_circle')
+          .data(data)
+          .enter()
+          .append('circle')
+            .attr('class', 'gray_circle')
+            .attr('r', d => d.sourceRadius)
+            .attr('fill', '#efefef')
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+
+
+        svg.selectAll('.circle')
+          .data(data)
+          .enter()
+          .append('circle')
+            .attr('class', 'circle')
+            .attr('r', d => d.sourceRadius)
+            .attr('fill', d => d.color)
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+
+        svg.selectAll('.years_label')
+          .data([
+            {label: '1995', x: xCenter[0], y: 100},
+            {label: '2017', x: xCenter[1], y: 100}
+          ])
+          .enter()
+          .append('text')
+            .attr('class', 'years_label')
+            .attr('x', d => d.x)
+            .attr('y', d => d.y)
+            .text(d => d.label)
+
+        svg.selectAll('.diversity_label')
+          .data([
+            {label: 'Extremely Undiverse', x: xCenter[0], y: yCenter[0]},
+            {label: 'Undiverse',           x: xCenter[0], y: yCenter[1]},
+            {label: 'Diverse',             x: xCenter[0], y: yCenter[2]}
+          ])
+          .enter()
+          .append('text')
+            .attr('class', 'diversity_label')
+            .attr('x', d => d.x)
+            .attr('y', d => d.y)
+            .text(d => d.label)
+
+        svg.selectAll('.description_label')
+          .data([
+            {label: 'More than 90%', x: xCenter[0], y: yCenter[0] + 30},
+            {label: '75% to 90%',    x: xCenter[0], y: yCenter[1] + 30},
+            {label: 'Less than 75%', x: xCenter[0], y: yCenter[2] + 30}
+          ])
+          .enter()
+          .append('text')
+            .attr('class', 'description_label')
+            .attr('x', d => d.x)
+            .attr('y', d => d.y)
+            .text(d => d.label)
+
+        svg.selectAll('.diversity_label')
+          .transition()
+          .ease(d3.easePoly)
+          .duration((delay + animDuration) / 8.0)
+          .delay(7 * (delay + animDuration) / 8.0)
+          .attr('x', d => d3.mean(xCenter))
+
+        svg.selectAll('.description_label')
+          .transition()
+          .ease(d3.easePoly)
+          .duration((delay + animDuration) / 8.0)
+          .delay(7 * (delay + animDuration) / 8.0)
+          .attr('x', d => d3.mean(xCenter))
+
+        svg.selectAll('.circle')
+          .transition()
+          .ease(d3.easePoly.exponent(5))
+          .duration(d =>
+            Math.floor((tolerance * (d.random - 1) + 1) * animDuration)
+          )
+          .delay(d =>
+            Math.floor(delay + ((1 - d.random) * tolerance) * animDuration)
+          )
+          .attr('r', d => d.targetRadius)
+          .attr('cx', d => d.targetX)
+          .attr('cy', d => d.targetY)
+
+        svg.selectAll('.gray_circle')
+          .transition()
+          .ease(d3.easePoly.exponent(5))
+          .duration(Math.floor((1 - tolerance) * animDuration))
+          .delay(Math.floor(delay + tolerance * animDuration))
+          .attr('fill', d => d.color)
 
         // commented code is used for data preprocessing
         // here: import raw data
 
         // const maxTotal = d3.max(
-        //   nodes.map(d => +d.total_1994).concat(nodes.map(d => +d.total_2016))
+        //   data.map(d => +d.total_1994).concat(data.map(d => +d.total_2016))
         // )
         // const totalScale =
         //   d3.scaleSqrt()
         //     .domain([0, maxTotal])
         //     .range([1, 20])
         //
-        // nodes = nodes.map(function(d){
+        // data = data.map(function(d){
         //   const sourceIndex = +d.diverse_1994 + 1
         //   const targetIndex = +d.diverse_2016 + 1
         //
@@ -81,26 +175,12 @@
         //     targetY: yCenter[targetIndex]
         //   }
         // })
-
-        let grayCircles =
-          d3.select('svg')
-            .selectAll('.gray_circle')
-
-        let circles =
-          d3.select('svg')
-            .selectAll('.circle')
-
-        grayCircles
-          .data(nodes)
-          .enter()
-          .append('circle')
-          .attr('class', 'gray_circle')
-          .attr('r', d => d.sourceRadius)
-          .attr('cx', d => d.x)
-          .attr('cy', d => d.y)
-
+        //
+        //
         // calculate source and target coords with d3.force layout
 
+        // const strength = 0.01
+        //
         // function ticked() {
         //   circles
         //     .attr('class', 'circle')
@@ -111,7 +191,7 @@
         // }
         //
         // const simulation =
-        //   d3.forceSimulation(nodes)
+        //   d3.forceSimulation(data)
         //     // .force('collision',
         //     //   d3.forceCollide()
         //     //     .radius(d => d.sourceRadius + 0.5)
@@ -134,7 +214,7 @@
         // improve source and target coords
 
         // function updateNodes() {
-        //   setTimeout(d => console.log(d3.csvFormat(nodes)), 60000)
+        //   setTimeout(d => console.log(d3.csvFormat(data)), 60000)
         //
         //   simulation.alphaDecay(0.01)
         //             .force('x',
@@ -151,99 +231,6 @@
         // }
         //
         // setTimeout(updateNodes, 1000)
-
-        const factor = 1
-        const delay = factor * 2000
-        const animDuration = factor * 10000
-        const tolerance = 0.75
-
-        circles = circles.data(nodes)
-
-        circles.exit()
-          .remove()
-
-        circles.transition()
-
-        circles = circles.enter()
-          .append('circle')
-          .attr('class', 'circle')
-          .attr('r', d => d.sourceRadius)
-          .attr('fill', d => d.color)
-          .merge(circles)
-          .attr('cx', d => d.x)
-          .attr('cy', d => d.y)
-
-        svg.selectAll('.years_label')
-          .data([
-            {label: '1995', x: xCenter[0], y: 100},
-            {label: '2017', x: xCenter[1], y: 100}
-          ])
-          .enter()
-          .append('text')
-          .attr('class', 'years_label')
-          .attr('x', d => d.x)
-          .attr('y', d => d.y)
-          .text(d => d.label)
-
-        svg.selectAll('.diversity_label')
-          .data([
-            {label: 'Extremely Undiverse', x: xCenter[0], y: yCenter[0]},
-            {label: 'Undiverse',           x: xCenter[0], y: yCenter[1]},
-            {label: 'Diverse',             x: xCenter[0], y: yCenter[2]}
-          ])
-          .enter()
-          .append('text')
-          .attr('class', 'diversity_label')
-          .attr('x', d => d.x)
-          .attr('y', d => d.y)
-          .text(d => d.label)
-
-        svg.selectAll('.description_label')
-          .data([
-            {label: 'More than 90%', x: xCenter[0], y: yCenter[0] + 30},
-            {label: '75% to 90%',    x: xCenter[0], y: yCenter[1] + 30},
-            {label: 'Less than 75%', x: xCenter[0], y: yCenter[2] + 30}
-          ])
-          .enter()
-          .append('text')
-          .attr('class', 'description_label')
-          .attr('x', d => d.x)
-          .attr('y', d => d.y)
-          .text(d => d.label)
-
-        svg.selectAll('.diversity_label')
-          .transition()
-          .ease(d3.easeLinear)
-          .duration((delay + animDuration) / 8.0)
-          .delay(7 * (delay + animDuration) / 8.0)
-          .attr('x', d => d3.mean(xCenter))
-
-        svg.selectAll('.description_label')
-          .transition()
-          .ease(d3.easeLinear)
-          .duration((delay + animDuration) / 8.0)
-          .delay(7 * (delay + animDuration) / 8.0)
-          .attr('x', d => d3.mean(xCenter))
-
-        svg.selectAll('.circle')
-          .transition()
-          .ease(d3.easeLinear)
-          .duration(d =>
-            Math.floor((tolerance * (d.random - 1) + 1) * animDuration)
-          )
-          .delay(d =>
-            Math.floor(delay + ((1 - d.random) * tolerance) * animDuration)
-          )
-          .attr('r', d => d.targetRadius)
-          .attr('cx', d => d.targetX)
-          .attr('cy', d => d.targetY)
-
-        svg.selectAll('.gray_circle')
-          .transition()
-          .ease(d3.easeLinear)
-          .duration(Math.floor((1 - tolerance) * animDuration))
-          .delay(Math.floor(delay + tolerance * animDuration))
-          .attr('fill', d => d.color)
       })
     </script>
   </body>
