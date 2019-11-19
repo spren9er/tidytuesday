@@ -89,10 +89,8 @@ edges2 <- top_languages_per_pkg %>%
 
 edges <- bind_rows(edges1, edges2)
 
-top_language_per_pkg <- top_languages_per_pkg %>%
-  filter(main)
-
-vertices1 <- top_language_per_pkg %>%
+vertices1 <- top_languages_per_pkg %>%
+  filter(main) %>%
   transmute(
     node = pkg_name, language, total_code, level = 1
   )
