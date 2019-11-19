@@ -100,11 +100,11 @@ vertices2 <- edges2 %>%
     node = to, language = to, total_code, level = 2
   )
 
-vertices3 = tibble(
+vertices3 <- tibble(
   node = '', language = NA, total_code = 0, level = 3
 )
 
-vertices = bind_rows(vertices1, vertices2, vertices3) %>%
+vertices <- bind_rows(vertices1, vertices2, vertices3) %>%
   mutate(
     radius = total_code**(1.8), # scaling circles
     language = factor(language, names(top_language_colors))
