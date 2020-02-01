@@ -1,0 +1,1 @@
+https://geoservices.lib.berkeley.edu:443/geoserver/wfs?outputformat=SHAPE-ZIP&request=GetFeature&service=wfs&srsName=EPSG%3A4326&typeName=s7d02x&version=2.0.0

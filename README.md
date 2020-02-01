@@ -21,3 +21,28 @@ Following package versions are used in `tidyverse`:
 ✔ tidyr   0.8.3.9000     ✔ stringr 1.3.1.9000
 ✔ readr   1.3.1          ✔ forcats 0.4.0
 ```
+
+## Submit attachments on twitter
+
+### Video file conversion (to .mp4)
+
+```
+ffmpeg -y -i input.mov -vf "setpts=0.5*PTS,scale=-1:1080" -r 40000/1001 output.mp4
+```
+
+### Video file conversion (to .gif)
+
+In order to get a high resolution gif file, use gifski.
+On macOS:
+
+```
+brew install gifski
+ffmpeg -y -i input.mov -vf "setpts=0.5*PTS" frames/frame%04d.png
+gifski -o output.gif frames/frame*.png
+```
+
+Change `fps`
+
+```
+gifski --fps 1 -o output.gif frames/frame*.png
+```
