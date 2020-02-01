@@ -94,4 +94,4 @@ ggdraw() +
     color = '#cccccc', alpha = 0.2, angle = 83
   )
 
-ggsave('images/tidytuesday_202005_san_francisco_tree_01.png', dpi = 89)
+ggsave('images/tidytuesday_202005_san_francisco_trees.png', dpi = 89)
