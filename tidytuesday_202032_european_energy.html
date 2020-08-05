@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz:wght@400;700&display=swap" rel="stylesheet">
+
+  <style media="screen">
+    body {
+      font-family: "Yanone Kaffeesatz", sans-serif;
+      width: 1200px;
+      color: #333333;
+    }
+
+    h1, h3, h4 {
+      text-align: center;
+    }
+
+    h1 {
+      font-weight: bold;
+      font-size: 48px;
+      margin-top: 90px;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      font-weight: normal;
+      font-size: 34px;
+      margin-top: 0px;
+    }
+
+    h4 {
+      font-weight: normal;
+      font-size: 20px;
+      margin-top: -60px;
+    }
+
+    svg {
+      margin-left: 100px;
+      margin-top: -80px;
+    }
+
+    p {
+      text-align: center;
+      margin: 0;
+    }
+
+    .type_label, .year_label, .inline_label {
+      fill: #333333;
+      text-anchor: start;
+      font-size: 16px;
+      font-weight: normal;
+    }
+
+    .inline_label {
+      text-anchor: middle;
+    }
+    
+    .rectangle, .type_legend, .year_legend {
+      stroke: #333333;
+      stroke-opacity: 1;
+    }
+
+    .rectangle, .type_legend, .year_legend {
+      stroke-width: 0.25;
+    }
+    
+    .type_legend, .year_legend {
+      stroke-width: 0.1;
+    }
+  </style>
+
+  <title>TidyTuesday 32|2020 • European Energy</title>
+</head>
+
+<body>
+  <h1>European Energy</h1>
+
+  <h3>How European countries generated electricity 2016 - 2018</h3>
+
+  <p>(press spacebar to pause/unpause)</p>
+
+  <svg></svg>
+
+  <h4>tidytuesday 32|2020 &nbsp; • &nbsp; spren9er</h4>
+
+  <script type="text/javascript">
+    Promise.all([
+        d3.csv(
+          "data/tidytuesday_202032_european_energy.csv",
+          d => ({
+            chunk_id: +d.chunk_id,
+            year: +d.year,
+            type: d.type,
+            country: d.country,
+            xmin: +d.xmin,
+            xmax: +d.xmax,
+            ymin: +d.ymin,
+            ymax: +d.ymax,
+            color: d.color
+          })
+        ),
+        d3.csv(
+          "data/tidytuesday_202032_european_energy_labels.csv",
+          d => ({
+            chunk_id: +d.chunk_id,
+            ylabel: +d.ylabel,
+            label: d.label
+          })
+        )
+    ]).then(files => {
+      const data = files[0]
+      const label_data = files[1]
+
+      console.log(label_data)
+
+      const width = 1000
+      const height = 1000
+      const pad = 10
+
+      const svg =
+        d3.select("svg")
+          .attr("width", width + 200)
+          .attr("height", height)
+
+      const xScale = d3.scaleLinear()
+                       .domain([0, 1])
+                       .range([width / pad, (pad - 1) * width / pad])
+
+      const yScale = d3.scaleLinear()
+                       .domain([0, 1])
+                       .range([height / pad, (pad - 1) * height / pad])
+
+      let chunk_id = 1
+      let pause = false
+
+      let legendType = [
+        {color: "#1c8087", label: "Renewable", y: 0.29},
+        {color: "#edddd4", label: "Nuclear", y: 0.35},
+        {color: "#ca4d3f", label: "Conv. Thermal", y: 0.41},
+      ]
+
+      let legendYear = [
+        {color: "#acacac", label: "2018", y: 0.59},
+        {color: "#cccccc", label: "2017", y: 0.65},
+        {color: "#ececec", label: "2016", y: 0.71},
+      ]
+
+      svg
+        .selectAll(".type_legend")
+        .data(legendType)
+        .enter()
+        .append("rect")
+        .attr("class", "type_legend")
+        .attr("x", 930)
+        .attr("y", d => yScale(d.y))
+        .attr("width", d => 30)
+        .attr("height", d => 30)
+        .attr("fill", d => d.color)
+
+      svg
+        .selectAll(".type_label")
+        .data(legendType)
+        .enter()
+        .append("text")
+        .attr("class", "type_label")
+        .attr("x", 970)
+        .attr("y", d => yScale(d.y + 0.02))
+        .attr("dominant-baseline", "middle")
+        .text(d => d.label)
+
+      svg
+        .selectAll(".year_legend")
+        .data(legendYear)
+        .enter()
+        .append("rect")
+        .attr("class", "year_legend")
+        .attr("x", 930)
+        .attr("y", d => yScale(d.y))
+        .attr("width", d => 30)
+        .attr("height", d => 30)
+        .attr("fill", d => d.color)
+
+      svg
+        .selectAll(".year_label")
+        .data(legendYear)
+        .enter()
+        .append("text")
+        .attr("class", "year_label")
+        .attr("x", 970)
+        .attr("y", d => yScale(d.y + 0.02))
+        .attr("dominant-baseline", "middle")
+        .text(d => d.label)
+
+      let rects = svg
+        .selectAll(".rectangle")
+        .data(data.filter(d => d.chunk_id === chunk_id))
+        .enter()
+        .append("rect")
+        .attr("class", "rectangle")
+
+      let labels = svg
+        .selectAll(".label")
+        .data(label_data.filter(d => d.chunk_id === chunk_id))
+        .enter()
+        .append("text")
+        .attr("class", "label")
+        .attr("fill", "#333333")
+        .attr("text-anchor", "end")
+        .attr("dominant-baseline", "middle")
+        .style("font-size", "20px")
+        .style("font-weight", "normal")
+
+      let inlineLabels = svg
+        .selectAll(".inline_label")
+        .data(data.filter(d => d.chunk_id === chunk_id))
+        .enter()
+        .append("text")
+        .attr("class", "inline_label")
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "middle")
+
+      function xWidth(xmin, xmax) {
+        const width = Math.ceil(xScale(xmax) - xScale(xmin))
+        if (width < 1) return 0
+
+        return width
+      }
+
+      function yHeight(ymin, ymax) {
+        const height = Math.ceil(yScale(ymax) - yScale(ymin))
+        if (height < 1) return 0
+
+        return height
+      }
+
+      function label(d) {
+        if (xWidth(d.xmin, d.xmax) >= 20 && yHeight(d.ymin, d.ymax) >= 20) {
+          return d.country
+        }
+
+        return ""
+      }
+
+      function showLabels(duration=0) {
+        labels
+          .data(label_data.filter(d => d.chunk_id === chunk_id))
+          .transition()
+          .duration(duration)
+          .ease(d3.easeCubic)
+          .attr("x", xScale(0) - 15)
+          .attr("y", d => yScale(d.ylabel))
+          .text(d => d.label)
+
+        inlineLabels
+          .data(data.filter(d => d.chunk_id === chunk_id))
+          .transition()
+          .duration(duration)
+          .ease(d3.easeCubic)
+          .attr("x", d => xScale(d.xmin) + xWidth(d.xmin, d.xmax) / 2.0)
+          .attr("y", d => yScale(d.ymin) + yHeight(d.ymin, d.ymax) / 2.0)
+          .style("font-size", d => label(d) === "" ? "0px" : "16px")
+          .text(d => label(d))
+      }
+
+      function showRects(duration=0) {
+        rects
+          .data(data.filter(d => d.chunk_id === chunk_id))
+          .transition()
+          .duration(duration)
+          .ease(d3.easeCubic)
+          .attr("x", d => xScale(d.xmin))
+          .attr("y", d => yScale(d.ymin))
+          .attr("width", d => xWidth(d.xmin, d.xmax))
+          .attr("height", d => yHeight(d.ymin, d.ymax))
+          .attr("fill", d => d.color)
+      }
+
+      function update() {
+        if (pause) return false
+
+        chunk_id = (chunk_id < 3 ? chunk_id + 1 : 1)
+        showRects(1200)
+        showLabels(1200)
+      }
+
+      document.body.onkeyup = e => {
+        if (e.keyCode == 32) pause = !pause
+      }
+
+      showRects()
+      showLabels()
+
+      setInterval(update, 3500)      
+    })
+  </script>
+</body>
+</html>
