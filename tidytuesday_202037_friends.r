@@ -127,7 +127,7 @@ transform_coords <- function(x0, y0, x1, y1, radius0, radius1, dist, sign) {
     return(points)
 }
 
-angles <- seq(0, 5) * 360 / 2 / pi
+angles <- seq(0, 5) * pi / 3
 
 nodes <- tibble(
   speaker = main_speakers,
@@ -253,7 +253,7 @@ plot_season <- function(season) {
     facet_wrap(~title, ncol = 5) +
     coord_fixed() +
     labs(
-      title = paste("FRIENDS  •  Season", season),
+      title = paste("F • R • I • E • N • D • S  —  Season", season),
       subtitle = "#tidytuesday 37|2020",
       caption = "© 2020 spren9er"
     ) +
