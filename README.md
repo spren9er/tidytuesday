@@ -10,7 +10,7 @@ The #tidytuesday project is a weekly data project aimed at the `R` ecosystem. An
 
 This repository is a collection of some code snippets used for wrangling, aggregating and visualizing data with `tidyverse` to create a meaningful insight about the underlying weekly data sets.
 
-**Important**: _The code is minimalized and it's focus is to show how data is prepared, aggregated and visualized (without distraction of styling and modifying theme, fonts, etc.). Charts in the `images` folder are created with the code shown here with additional theme modifications._
+**Important** _The code is minimalized and its focus is to show how data is prepared, aggregated and visualized (without distraction of styling and modifying theme, fonts, etc.). Sometimes charts in the `images` folder are created with the code shown here with additional theme modifications._
 
 Following package versions are used in `tidyverse`:
 
@@ -32,7 +32,7 @@ ffmpeg -y -i input.mov -vf "setpts=0.5*PTS,scale=-1:1080" -r 40000/1001 output.m
 
 ### Video file conversion (to .gif)
 
-In order to get a high resolution gif file, use gifski.
+In order to get a high resolution gif file, use `gifski`.
 On macOS:
 
 ```
