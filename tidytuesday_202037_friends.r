@@ -1,3 +1,5 @@
+# %%
+library(tidyverse)
 library(ggforce)
 library(grid)
 library(cowplot)
@@ -6,7 +8,10 @@ data <- tidytuesdayR::tt_load(2020, week = 37)
 
 texts <- data$friends
 
-# clean up titles
+# %% [markdown]
+# Clean up titles
+
+# %%
 episodes <- data$friends_info %>%
   select(season, episode, title) %>%
   mutate(
@@ -35,7 +40,10 @@ main_speakers <- c(
   "Chandler Bing"
 )
 
-# determine spoken text totals for each character
+# %% [markdown]
+# Determine spoken text totals for each character
+
+# %%
 basic_text_totals <- texts %>%
   filter(speaker %in% c(main_speakers, "#ALL#")) %>%
   mutate(text_length = str_length(text)) %>%
@@ -61,7 +69,10 @@ text_totals <- bind_rows(basic_text_totals, all_text_totals) %>%
   count(season, episode, scene, speaker, wt = total, name = "total") %>%
   filter(speaker != "#ALL#")
 
-# determine all spoken text totals from one specific speaker to all others
+# %% [markdown]
+# Determine all spoken text totals from one specific speaker to all others
+
+# %%
 spoken_from <- function(df, speaker) {
   speakers <- text_totals %>%
     filter(speaker == !!speaker) %>%
@@ -93,7 +104,10 @@ direction <- function(x0, y0, x1, y1) {
   return(-1)
 }
 
-# convert exact points of hexagon to translated ones (for link connections)
+# %% [markdown]
+# Convert exact points of hexagon to translated ones (for link connections)
+
+# %%
 transform_coords <- function(x0, y0, x1, y1, radius0, radius1, dist, sign) {
     if (direction(x0, y0, x1, y1) < 0) return(
       transform_coords(x1, y1, x0, y0, radius1, radius0, dist, -sign)
@@ -113,13 +127,18 @@ transform_coords <- function(x0, y0, x1, y1, radius0, radius1, dist, sign) {
     return(points)
 }
 
+angles <- seq(0, 5) * 360 / 2 / pi
+
 nodes <- tibble(
   speaker = main_speakers,
   x = map_dbl(angles, cos),
   y = map_dbl(angles, sin)
 )
 
-# compute all edges
+# %% [markdown]
+# Compute all edges
+
+# %%
 edges <- reduce(main_speakers, spoken_from, .init = tibble()) %>%
   arrange(season, episode, source, target, total) %>%
   left_join(nodes, by = c("source" = "speaker")) %>%
@@ -164,6 +183,10 @@ edges <- reduce(main_speakers, spoken_from, .init = tibble()) %>%
 colors <- c("#c1d5d3", "#3a3845", "#a2a7aa", "#b3465a", "#e2dfcd", "#674f5e")
 names(colors) <- main_speakers
 
+# %% [markdown]
+# Define function for plotting all network graphs per season
+
+# %%
 plot_season <- function(season) {
   # top ten edges for each episode of given season
   top_edges <- edges %>%
@@ -277,13 +300,19 @@ plot_season <- function(season) {
 
   ggsave(
     paste0(
-      "tidytuesday_202037_friends_season_",
+      "images/tidytuesday_202037_friends_season_",
       str_pad(season, 2, pad = "0"),
       ".png"
     ),
     p,
     width = 20, height = 20, dpi = 300, bg = "#4f5360"
   )
+
+  return(p)
 }
 
+# %% [markdown]
+# Export images for all seasons
+
+# %%
 map(seq(1, 10), plot_season)
