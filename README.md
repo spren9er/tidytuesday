@@ -18,6 +18,8 @@ In order to submit an animation to twitter, one has to convert it to a `gif` or 
 On twitter, _gif_ files look often better than movie files.
 Additionally, one can pause animation by tapping on `gif` animation.
 
+For detailed twitter specifications on image and movie files, see [here](https://developer.twitter.com/en/docs/twitter-api/v1/media/upload-media/uploading-media/media-best-practices). 
+
 ### Installation
 
 Install `ffmpeg` and `gifski`, e.g. in _macOS_ via `brew` 
@@ -30,7 +32,7 @@ brew install gifski
 ### Video file conversion (to .gif)
 
 In order to get a high resolution `gif` file, use `gifski`.
-On macOS:
+On _macOS_:
 
 ```
 ffmpeg -y -i input.mov -vf "setpts=0.5*PTS" frames/frame%04d.png
