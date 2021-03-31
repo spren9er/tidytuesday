@@ -176,7 +176,6 @@ base_y_max <- max(
   max(terms_df$transform_lightness)
 )
 
-
 # %%
 base_plot <- terms_df %>%
   ggplot(aes(x = transform_sat, y = transform_lightness, color=terms)) +
@@ -233,7 +232,7 @@ base_plot <- terms_df %>%
     size = 5,
     hjust = 0,
     color = "#efefef",
-    label = "→ high saturation",
+    label = "high saturation →",
     fontface = "bold"
   ) +
   scale_color_manual(values = colors) +
